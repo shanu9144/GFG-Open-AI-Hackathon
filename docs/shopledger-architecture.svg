@@ -1,0 +1,215 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1500" viewBox="0 0 1800 1500" role="img" aria-labelledby="title desc">
+  <title id="title">ShopLedger architecture and order flow</title>
+  <desc id="desc">Architecture diagram of the ShopLedger browser UI, Express server, routes, library modules, config, JSON data store, and order placement flow.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#40577a"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#e07821"/>
+    </marker>
+    <style>
+      text { font-family: Inter, "Segoe UI", Arial, sans-serif; fill: #17253e; }
+      .title { font-size: 42px; font-weight: 750; }
+      .subtitle { font-size: 18px; fill: #52627a; }
+      .section-title { font-size: 22px; font-weight: 700; }
+      .card-title { font-size: 19px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; fill: #52627a; }
+      .route { font-size: 14px; font-family: Consolas, "Courier New", monospace; }
+      .module-name { font-size: 15px; font-weight: 700; font-family: Consolas, "Courier New", monospace; }
+      .module-desc { font-size: 12px; fill: #52627a; }
+      .step-title { font-size: 18px; font-weight: 700; }
+      .step-body { font-size: 15px; }
+      .line { fill: none; stroke: #40577a; stroke-width: 3; marker-end: url(#arrow); }
+      .line-thin { fill: none; stroke: #6c7e99; stroke-width: 2; marker-end: url(#arrow); }
+      .flow-line { fill: none; stroke: #e07821; stroke-width: 3; marker-end: url(#arrow-orange); }
+    </style>
+  </defs>
+
+  <rect width="1800" height="1500" fill="#f4f7fb"/>
+  <text class="title" x="50" y="62">ShopLedger — Architecture &amp; order flow</text>
+  <text class="subtitle" x="52" y="94">Browser UI · Express routes · shared business modules · JSON file persistence</text>
+
+  <!-- Architecture area -->
+  <rect x="35" y="120" width="1730" height="810" rx="20" fill="#ffffff" stroke="#dbe3ee" stroke-width="2"/>
+  <text class="section-title" x="60" y="158">Application architecture</text>
+
+  <!-- Browser UI -->
+  <rect x="55" y="190" width="300" height="430" rx="14" fill="#eef6ff" stroke="#8bb9e8" stroke-width="2"/>
+  <path d="M69 190 H341 Q355 190 355 204 V242 H55 V204 Q55 190 69 190Z" fill="#245a91"/>
+  <text x="78" y="224" font-size="22" font-weight="700" fill="#fff">Browser UI</text>
+  <rect x="75" y="265" width="260" height="50" rx="8" fill="#fff" stroke="#c9ddf1"/>
+  <text class="module-name" x="91" y="296">public/index.html</text>
+  <rect x="75" y="326" width="260" height="50" rx="8" fill="#fff" stroke="#c9ddf1"/>
+  <text class="module-name" x="91" y="357">public/js/app.js</text>
+  <rect x="75" y="387" width="260" height="50" rx="8" fill="#fff" stroke="#c9ddf1"/>
+  <text class="module-name" x="91" y="418">public/css/style.css</text>
+  <text class="small" x="78" y="470">Screens and actions</text>
+  <text class="body" x="78" y="498">POS · Order history</text>
+  <text class="body" x="78" y="522">Khata · Inventory/GST audit</text>
+  <text class="small" x="78" y="572">Static files served from /public</text>
+
+  <!-- Express server -->
+  <rect x="395" y="190" width="300" height="285" rx="14" fill="#edf3ff" stroke="#7899cb" stroke-width="2"/>
+  <path d="M409 190 H681 Q695 190 695 204 V244 H395 V204 Q395 190 409 190Z" fill="#233f70"/>
+  <text x="416" y="224" font-size="20" font-weight="700" fill="#fff">Express app</text>
+  <text class="module-name" x="416" y="276">server.js</text>
+  <line x1="416" y1="293" x2="674" y2="293" stroke="#c4d2e7"/>
+  <text class="body" x="416" y="324">Serves static files: /public</text>
+  <text class="small" x="416" y="356">Mounts routers under /api</text>
+  <rect x="413" y="378" width="264" height="72" rx="8" fill="#fff" stroke="#c4d2e7"/>
+  <text class="route" x="426" y="408">GET /orders/:id/invoice</text>
+  <text class="small" x="426" y="432">Direct route in server.js</text>
+
+  <!-- UI to server -->
+  <path class="line" d="M355 397 H390"/>
+  <text class="small" x="357" y="380">HTTP</text>
+
+  <!-- Routes -->
+  <rect x="755" y="180" width="565" height="650" rx="14" fill="#f5fbfb" stroke="#93c9c4" stroke-width="2"/>
+  <text class="section-title" x="780" y="216">API routers</text>
+
+  <rect x="780" y="235" width="515" height="112" rx="10" fill="#fff" stroke="#9bcac4" stroke-width="1.5"/>
+  <text class="card-title" x="798" y="263">routes/products.js</text>
+  <text class="route" x="798" y="288">GET /api/products</text>
+  <text class="route" x="798" y="310">GET /api/coupons</text>
+  <text class="small" x="798" y="333">Uses: store, inventory, tax, coupons</text>
+
+  <rect x="780" y="360" width="515" height="156" rx="10" fill="#fff" stroke="#9bcac4" stroke-width="1.5"/>
+  <text class="card-title" x="798" y="389">routes/orders.js</text>
+  <text class="route" x="798" y="414">GET /api/orders · GET /api/orders/:id</text>
+  <text class="route" x="798" y="436">POST /api/orders</text>
+  <text class="route" x="798" y="458">POST /api/orders/:id/cancel</text>
+  <text class="small" x="798" y="489">Uses: store, inventory, pricing, coupons, orders, ledger</text>
+
+  <rect x="780" y="529" width="515" height="112" rx="10" fill="#fff" stroke="#9bcac4" stroke-width="1.5"/>
+  <text class="card-title" x="798" y="557">routes/customers.js</text>
+  <text class="route" x="798" y="582">GET /api/customers</text>
+  <text class="route" x="798" y="604">POST /api/customers/:id/settle</text>
+  <text class="small" x="798" y="627">Uses: store, ledger</text>
+
+  <rect x="780" y="654" width="515" height="154" rx="10" fill="#fff" stroke="#9bcac4" stroke-width="1.5"/>
+  <text class="card-title" x="798" y="682">routes/reports.js</text>
+  <text class="route" x="798" y="707">GET /api/reports/dashboard</text>
+  <text class="route" x="798" y="729">GET /api/reports/gst-reconciliation</text>
+  <text class="route" x="798" y="751">POST /api/pricing/preview</text>
+  <text class="route" x="798" y="773">GET /api/admin/export</text>
+  <text class="small" x="798" y="796">Uses: config, store, reports, pricing, coupons</text>
+
+  <!-- Server router mount -->
+  <path class="line-thin" d="M695 324 H728 V291 H775"/>
+  <path class="line-thin" d="M728 324 V438 H775"/>
+  <path class="line-thin" d="M728 438 V585 H775"/>
+  <path class="line-thin" d="M728 585 V731 H775"/>
+  <text class="small" x="700" y="304">/api</text>
+
+  <!-- Library modules -->
+  <rect x="1350" y="180" width="390" height="650" rx="14" fill="#f7f9fc" stroke="#a8b5c7" stroke-width="2"/>
+  <text class="section-title" x="1375" y="216">lib/ modules</text>
+  <text class="small" x="1377" y="239">Core modules and helpers</text>
+
+  <g>
+    <rect x="1375" y="258" width="170" height="80" rx="8" fill="#fff" stroke="#cad4e1"/>
+    <text class="module-name" x="1388" y="283">lib/store.js</text>
+    <text class="module-desc" x="1388" y="306">JSON read/write + audit</text>
+    <rect x="1557" y="258" width="160" height="80" rx="8" fill="#fff" stroke="#cad4e1"/>
+    <text class="module-name" x="1570" y="283">lib/orders.js</text>
+    <text class="module-desc" x="1570" y="306">create · list · cancel</text>
+
+    <rect x="1375" y="350" width="170" height="80" rx="8" fill="#fff" stroke="#cad4e1"/>
+    <text class="module-name" x="1388" y="375">lib/inventory.js</text>
+    <text class="module-desc" x="1388" y="398">stock checks + updates</text>
+    <rect x="1557" y="350" width="160" height="80" rx="8" fill="#fff" stroke="#cad4e1"/>
+    <text class="module-name" x="1570" y="375">lib/pricing.js</text>
+    <text class="module-desc" x="1570" y="398">totals + tax breakdown</text>
+
+    <rect x="1375" y="442" width="170" height="80" rx="8" fill="#fff" stroke="#cad4e1"/>
+    <text class="module-name" x="1388" y="467">lib/tax.js</text>
+    <text class="module-desc" x="1388" y="490">HSN GST rates + split</text>
+    <rect x="1557" y="442" width="160" height="80" rx="8" fill="#fff" stroke="#cad4e1"/>
+    <text class="module-name" x="1570" y="467">lib/coupons.js</text>
+    <text class="module-desc" x="1570" y="490">coupon validation</text>
+
+    <rect x="1375" y="534" width="170" height="80" rx="8" fill="#fff" stroke="#cad4e1"/>
+    <text class="module-name" x="1388" y="559">lib/ledger.js</text>
+    <text class="module-desc" x="1388" y="582">Khata + settlements</text>
+    <rect x="1557" y="534" width="160" height="80" rx="8" fill="#fff" stroke="#cad4e1"/>
+    <text class="module-name" x="1570" y="559">lib/reports.js</text>
+    <text class="module-desc" x="1570" y="582">dashboard + GST recon</text>
+
+    <rect x="1375" y="626" width="170" height="80" rx="8" fill="#fff" stroke="#cad4e1"/>
+    <text class="module-name" x="1388" y="651">lib/invoice.js</text>
+    <text class="module-desc" x="1388" y="674">HTML invoice + figures</text>
+    <rect x="1557" y="626" width="160" height="80" rx="8" fill="#fff" stroke="#cad4e1"/>
+    <text class="module-name" x="1570" y="651">lib/dates.js</text>
+    <text class="module-desc" x="1570" y="674">date utilities</text>
+  </g>
+
+  <!-- API routers to business modules -->
+  <path class="line" d="M1320 488 H1344"/>
+  <text class="small" x="1299" y="470" text-anchor="end">calls</text>
+
+  <!-- config and persistence -->
+  <rect x="1375" y="735" width="162" height="90" rx="10" fill="#e8f3ff" stroke="#69a5dc" stroke-width="2"/>
+  <text class="module-name" x="1391" y="765">config.js</text>
+  <text class="module-desc" x="1391" y="787">port · shop · tax</text>
+  <text class="module-desc" x="1391" y="804">inventory · coupons</text>
+  <path class="line-thin" d="M1456 735 V714"/>
+
+  <rect x="1550" y="735" width="167" height="90" rx="10" fill="#fff1df" stroke="#e7a64e" stroke-width="2"/>
+  <text class="module-name" x="1564" y="765">data/db.json</text>
+  <text class="module-desc" x="1564" y="787">products · orders</text>
+  <text class="module-desc" x="1564" y="804">customers · settlements</text>
+  <path class="line-thin" d="M1375 298 H1361 V835 H1538 V780 H1545"/>
+  <text class="small" x="1443" y="855" text-anchor="middle">read / write</text>
+
+  <!-- Order placement flow -->
+  <rect x="35" y="960" width="1730" height="500" rx="20" fill="#fffaf4" stroke="#f0c99e" stroke-width="2"/>
+  <text class="section-title" x="60" y="1002">Order placement flow</text>
+  <text class="small" x="60" y="1030">Browser request → validation and billing → JSON persistence → browser response</text>
+
+  <g>
+    <rect x="58" y="1070" width="216" height="250" rx="12" fill="#fff" stroke="#e7a64e" stroke-width="2"/>
+    <circle cx="84" cy="1098" r="16" fill="#e07821"/><text x="84" y="1104" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">1</text>
+    <text class="step-title" x="108" y="1104">UI cart</text>
+    <text class="step-body" x="76" y="1144"><tspan x="76" dy="0">Sends cart to</tspan><tspan x="76" dy="23">POST /api/pricing/</tspan><tspan x="76" dy="23">preview for a live total</tspan></text>
+
+    <rect x="300" y="1070" width="216" height="250" rx="12" fill="#fff" stroke="#e7a64e" stroke-width="2"/>
+    <circle cx="326" cy="1098" r="16" fill="#e07821"/><text x="326" y="1104" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">2</text>
+    <text class="step-title" x="350" y="1104">Place order</text>
+    <text class="step-body" x="318" y="1144"><tspan x="318" dy="0">UI sends</tspan><tspan x="318" dy="23">POST /api/orders</tspan><tspan x="318" dy="23">to routes/orders.js</tspan></text>
+
+    <rect x="542" y="1070" width="216" height="250" rx="12" fill="#fff" stroke="#e7a64e" stroke-width="2"/>
+    <circle cx="568" cy="1098" r="16" fill="#e07821"/><text x="568" y="1104" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">3</text>
+    <text class="step-title" x="592" y="1104">Resolve + check</text>
+    <text class="step-body" x="560" y="1144"><tspan x="560" dy="0">Resolve products</tspan><tspan x="560" dy="23">from data; validate</tspan><tspan x="560" dy="23">stock and coupon</tspan></text>
+
+    <rect x="784" y="1070" width="216" height="250" rx="12" fill="#fff" stroke="#e7a64e" stroke-width="2"/>
+    <circle cx="810" cy="1098" r="16" fill="#e07821"/><text x="810" y="1104" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">4</text>
+    <text class="step-title" x="834" y="1104">Calculate</text>
+    <text class="step-body" x="802" y="1144"><tspan x="802" dy="0">Compute price,</tspan><tspan x="802" dy="23">discount, GST and</tspan><tspan x="802" dy="23">total; charge Khata</tspan><tspan x="802" dy="23">when selected</tspan></text>
+
+    <rect x="1026" y="1070" width="216" height="250" rx="12" fill="#fff" stroke="#e7a64e" stroke-width="2"/>
+    <circle cx="1052" cy="1098" r="16" fill="#e07821"/><text x="1052" y="1104" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">5</text>
+    <text class="step-title" x="1076" y="1104">Commit order</text>
+    <text class="step-body" x="1044" y="1144"><tspan x="1044" dy="0">Decrement stock;</tspan><tspan x="1044" dy="23">create order and</tspan><tspan x="1044" dy="23">append audit entry</tspan></text>
+
+    <rect x="1268" y="1070" width="216" height="250" rx="12" fill="#fff" stroke="#e7a64e" stroke-width="2"/>
+    <circle cx="1294" cy="1098" r="16" fill="#e07821"/><text x="1294" y="1104" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">6</text>
+    <text class="step-title" x="1318" y="1104">Persist</text>
+    <text class="step-body" x="1286" y="1144"><tspan x="1286" dy="0">lib/store.js writes</tspan><tspan x="1286" dy="23">the updated state to</tspan><tspan x="1286" dy="23">data/db.json</tspan></text>
+
+    <rect x="1510" y="1070" width="216" height="250" rx="12" fill="#fff" stroke="#e7a64e" stroke-width="2"/>
+    <circle cx="1536" cy="1098" r="16" fill="#e07821"/><text x="1536" y="1104" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">7</text>
+    <text class="step-title" x="1560" y="1104">Respond</text>
+    <text class="step-body" x="1528" y="1144"><tspan x="1528" dy="0">Return HTTP 201</tspan><tspan x="1528" dy="23">with the created</tspan><tspan x="1528" dy="23">order to the UI</tspan></text>
+  </g>
+
+  <path class="flow-line" d="M274 1195 H294"/>
+  <path class="flow-line" d="M516 1195 H536"/>
+  <path class="flow-line" d="M758 1195 H778"/>
+  <path class="flow-line" d="M1000 1195 H1020"/>
+  <path class="flow-line" d="M1242 1195 H1262"/>
+  <path class="flow-line" d="M1484 1195 H1504"/>
+</svg>
